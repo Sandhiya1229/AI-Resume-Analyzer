@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Resume Analyzer</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+header {
+    background: linear-gradient(
+        135deg,
+        #4f46e5,
+        #7c3aed
+    );
+
+    color: white;
+    text-align: center;
+    padding: 40px 20px;
+}
+
+header h1 {
+    font-size: 35px;
+    margin-bottom: 10px;
+}
+
+.container {
+    width: 90%;
+    max-width: 900px;
+    margin: 30px auto;
+}
+
+.card {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    margin-bottom: 25px;
+
+    box-shadow:
+        0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.card h2 {
+    margin-bottom: 20px;
+    color: #4338ca;
+}
+
+textarea {
+    width: 100%;
+    height: 250px;
+
+    padding: 15px;
+    margin: 15px 0;
+
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+
+    resize: vertical;
+    font-size: 15px;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 14px;
+
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+
+    margin-bottom: 15px;
+}
+
+input[type="file"] {
+    margin: 10px 0;
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: #4f46e5;
+    color: white;
+
+    font-size: 17px;
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+button:hover {
+    background: #3730a3;
+}
+
+.hidden {
+    display: none;
+}
+
+.score-box {
+    width: 150px;
+    height: 150px;
+
+    margin: 20px auto;
+
+    border-radius: 50%;
+
+    background: #eef2ff;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+}
+
+#score {
+    font-size: 45px;
+    font-weight: bold;
+    color: #4f46e5;
+}
+
+#skills,
+#keywords,
+#missingSkills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+
+    margin: 15px 0 25px;
+}
+
+.tag {
+    padding: 8px 12px;
+
+    border-radius: 20px;
+
+    background: #dbeafe;
+    color: #1d4ed8;
+
+    font-size: 14px;
+}
+
+.missing {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.keyword {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+ul {
+    padding-left: 25px;
+}
+
+li {
+    margin: 10px 0;
+}
+
+footer {
+    text-align: center;
+
+    background: #1e293b;
+    color: white;
+
+    padding: 20px;
+
+    margin-top: 40px;
+}
+
+@media (max-width: 600px) {
+
+    header h1 {
+        font-size: 26px;
+    }
+
+    .card {
+        padding: 20px;
+    }
+}
+
+    </style>
+</head>
+
+<body>
+    <script>
+        const skillsList = [
+    "html",
+    "css",
+    "javascript",
+    "react",
+    "node.js",
+    "node",
+    "python",
+    "java",
+    "c++",
+    "sql",
+    "mongodb",
+    "mysql",
+    "git",
+    "github",
+    "docker",
+    "aws",
+    "machine learning",
+    "data science",
+    "figma",
+    "typescript"
+];
+
+
+const importantKeywords = [
+    "experience",
+    "project",
+    "education",
+    "skills",
+    "certification",
+    "internship",
+    "achievement",
+    "communication",
+    "leadership"
+];
+
+
+const recommendedSkills = [
+    "javascript",
+    "html",
+    "css",
+    "react",
+    "sql",
+    "git",
+    "github",
+    "node.js"
+];
+
+
+// Analyze Resume
+
+function analyzeResume() {
+
+    const resume =
+        document.getElementById("resumeText")
+        .value
+        .toLowerCase();
+
+    const jobRole =
+        document.getElementById("jobRole")
+        .value
+        .toLowerCase();
+
+
+    if (resume.trim() === "") {
+
+        alert("Please paste your resume text!");
+
+        return;
+    }
+
+
+    // Find skills
+
+    let foundSkills = [];
+
+    skillsList.forEach(function(skill) {
+
+        if (resume.includes(skill)) {
+
+            foundSkills.push(skill);
+        }
+    });
+
+
+    // Find keywords
+
+    let foundKeywords = [];
+
+    importantKeywords.forEach(function(keyword) {
+
+        if (resume.includes(keyword)) {
+
+            foundKeywords.push(keyword);
+        }
+    });
+
+
+    // Find missing skills
+
+    let missingSkills = [];
+
+    recommendedSkills.forEach(function(skill) {
+
+        if (!resume.includes(skill)) {
+
+            missingSkills.push(skill);
+        }
+    });
+
+
+    // Calculate score
+
+    let score = 0;
+
+
+    score += Math.min(foundSkills.length * 7, 50);
+
+    score += Math.min(foundKeywords.length * 4, 30);
+
+    score += Math.min(resume.length / 100, 20);
+
+
+    score = Math.round(
+        Math.min(score, 100)
+    );
+
+
+    // Display score
+
+    document.getElementById("score")
+        .textContent = score;
+
+
+    // Display skills
+
+    const skillsDiv =
+        document.getElementById("skills");
+
+    skillsDiv.innerHTML = "";
+
+    if (foundSkills.length === 0) {
+
+        skillsDiv.innerHTML =
+            "<p>No technical skills detected.</p>";
+
+    } else {
+
+        foundSkills.forEach(function(skill) {
+
+            skillsDiv.innerHTML += `
+                <span class="tag">
+                    ${skill}
+                </span>
+            `;
+        });
+    }
+
+
+    // Display keywords
+
+    const keywordsDiv =
+        document.getElementById("keywords");
+
+    keywordsDiv.innerHTML = "";
+
+    foundKeywords.forEach(function(keyword) {
+
+        keywordsDiv.innerHTML += `
+            <span class="tag keyword">
+                ${keyword}
+            </span>
+        `;
+    });
+
+
+    // Display missing skills
+
+    const missingDiv =
+        document.getElementById("missingSkills");
+
+    missingDiv.innerHTML = "";
+
+    if (missingSkills.length === 0) {
+
+        missingDiv.innerHTML =
+            "<span class='tag'>All recommended skills found 🎉</span>";
+
+    } else {
+
+        missingSkills.forEach(function(skill) {
+
+            missingDiv.innerHTML += `
+                <span class="tag missing">
+                    ${skill}
+                </span>
+            `;
+        });
+    }
+
+
+    // Suggestions
+
+    const suggestions =
+        document.getElementById("suggestions");
+
+    suggestions.innerHTML = "";
+
+
+    if (resume.length < 500) {
+
+        suggestions.innerHTML += `
+            <li>Add more details about your projects and experience.</li>
+        `;
+    }
+
+
+    if (!resume.includes("project")) {
+
+        suggestions.innerHTML += `
+            <li>Add a Projects section with 2-3 relevant projects.</li>
+        `;
+    }
+
+
+    if (!resume.includes("education")) {
+
+        suggestions.innerHTML += `
+            <li>Add your educational qualifications.</li>
+        `;
+    }
+
+
+    if (!resume.includes("experience")) {
+
+        suggestions.innerHTML += `
+            <li>Include internship, freelance or work experience.</li>
+        `;
+    }
+
+
+    if (!resume.includes("github")) {
+
+        suggestions.innerHTML += `
+            <li>Add your GitHub profile and project links.</li>
+        `;
+    }
+
+
+    if (!resume.includes("certification")) {
+
+        suggestions.innerHTML += `
+            <li>Add relevant technical certifications.</li>
+        `;
+    }
+
+
+    if (jobRole !== "") {
+
+        suggestions.innerHTML += `
+            <li>
+                Customize your resume keywords according to
+                the ${jobRole} job role.
+            </li>
+        `;
+    }
+
+
+    if (suggestions.innerHTML === "") {
+
+        suggestions.innerHTML = `
+            <li>Great! Your resume contains the major sections.</li>
+            <li>Keep your resume concise and achievement-focused.</li>
+        `;
+    }
+
+
+    // Show result
+
+    document.getElementById("result")
+        .classList.remove("hidden");
+}
+
+    </script>
+
+<header>
+    <h1>🤖 AI Resume Analyzer</h1>
+    <p>Analyze your resume and improve your job readiness</p>
+</header>
+
+<div class="container">
+
+    <div class="card">
+
+        <h2>Upload / Paste Resume</h2>
+
+        <input
+            type="file"
+            id="resumeFile"
+            accept=".txt,.pdf"
+        >
+
+        <textarea
+            id="resumeText"
+            placeholder="Paste your resume text here..."
+        ></textarea>
+
+        <input
+            type="text"
+            id="jobRole"
+            placeholder="Target Job Role (Example: Web Developer)"
+        >
+
+        <button onclick="analyzeResume()">
+            🔍 Analyze Resume
+        </button>
+
+    </div>
+
+
+    <div id="result" class="card result hidden">
+
+        <h2>📊 Resume Analysis</h2>
+
+        <div class="score-box">
+            <div id="score">0</div>
+            <p>Resume Score</p>
+        </div>
+
+
+        <h3>💻 Skills Found</h3>
+
+        <div id="skills"></div>
+
+
+        <h3>🔑 Important Keywords</h3>
+
+        <div id="keywords"></div>
+
+
+        <h3>⚠️ Missing Skills</h3>
+
+        <div id="missingSkills"></div>
+
+
+        <h3>💡 Suggestions</h3>
+
+        <ul id="suggestions"></ul>
+
+    </div>
+
+</div>
+
+<footer>
+    <p>© 2026 AI Resume Analyzer | College Project</p>
+</footer>
+
+<script src="script.js"></script>
+
+</body>
+</html>
